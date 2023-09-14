@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
 import lombok.Builder;
 import org.hibernate.annotations.Immutable;
@@ -19,7 +20,6 @@ public class PrestadoraEntity {
     UUID id;
 
     StatusAprovacaoEnum statusAprovacao;
-
     UUID fkEmpresa;
 
     public PrestadoraEntity() {
@@ -31,7 +31,6 @@ public class PrestadoraEntity {
         this.statusAprovacao = statusAprovacao;
         this.fkEmpresa = fkEmpresa;
     }
-
 
 
     public UUID getId() {

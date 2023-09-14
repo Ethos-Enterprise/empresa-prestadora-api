@@ -1,20 +1,12 @@
 package com.ethos.empresaprestadoraapi.controller.response;
 
+import com.ethos.empresaprestadoraapi.repository.entity.statusenum.StatusAprovacaoEnum;
 import java.util.List;
 import java.util.UUID;
 
 public record PrestadoraResponse(
         UUID idPrestadora,
-        String razaoSocial,
-        List<ServicoResponse> servicos,
+        StatusAprovacaoEnum statusAprovacao,
         UUID fkEmpresa
 ) {
-    public record ServicoResponse(
-            UUID id,
-            String nome,
-            String descricao,
-            String valor,
-            String setor
-    ) {
-    }
 }

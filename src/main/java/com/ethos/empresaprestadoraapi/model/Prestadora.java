@@ -10,7 +10,7 @@ public record Prestadora(
 ) {
     @Builder(toBuilder = true)
     public Prestadora(StatusAprovacaoEnum statusAprovacao, UUID fkEmpresa) {
-        this.statusAprovacao = statusAprovacao;
+        this.statusAprovacao = statusAprovacao == null ? StatusAprovacaoEnum.PENDENTE : statusAprovacao;
         this.fkEmpresa = fkEmpresa;
     }
 }

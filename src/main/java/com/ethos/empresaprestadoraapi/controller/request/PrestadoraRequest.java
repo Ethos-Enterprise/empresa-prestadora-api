@@ -7,14 +7,6 @@ import java.util.UUID;
 
 public record PrestadoraRequest(
         UUID idEmpresa,
-        StatusAprovacaoEnum statusAprovacao,
-        ServicoRequest servicoRequest
+        StatusAprovacaoEnum statusAprovacao
 ) {
-    public record ServicoRequest(
-            String nome,
-            String descricao,
-            BigDecimal valor,
-            String setor) {
-    }
-
 }
