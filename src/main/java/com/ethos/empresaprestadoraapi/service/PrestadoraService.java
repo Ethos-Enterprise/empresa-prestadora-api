@@ -71,7 +71,16 @@ public class PrestadoraService {
 
     private PrestadoraEntity atualizarStatus(PrestadoraEntity entity){
         prestadoraRepository.updateStatusAprovacao(entity.getId(), entity.getStatusAprovacao());
-        PrestadoraEntity prestadoraSaved = getPrestadoraEntityById(entity.getId());
-        return prestadoraSaved;
+        return getPrestadoraEntityById(entity.getId());
+    }
+
+    public void deletePrestadora(UUID id){
+        PrestadoraEntity prestadoraEntity = getPrestadoraEntityById(id);
+        deletar(prestadoraEntity);
+        prestadoraResponseMapper.from(prestadoraEntity);
+    }
+
+    private void deletar(PrestadoraEntity entity){
+        prestadoraRepository.delete(entity);
     }
 }
