@@ -49,11 +49,24 @@ public class PrestadoraService {
         return prestadoraRepository.findAll().stream().map(prestadoraResponseMapper::from).toList();
     }
 
-    public PrestadoraResponse getPrestadoraById(java.util.UUID id){
+    public PrestadoraResponse getPrestadoraById(UUID id){
         return prestadoraResponseMapper.from(getPrestadoraEntityById(id));
     }
 
     private PrestadoraEntity getPrestadoraEntityById(UUID id){
         return prestadoraRepository.findById(id).orElseThrow();
+    }
+
+    public PrestadoraResponse putPrestadoraStatus(UUID id, PrestadoraRequest prestadoraRequest){
+        PrestadoraEntity prestadoraEntity = getPrestadoraEntityById(id);
+        prestadoraEntity.setStatusAprovacao(prestadoraRequest.statusAprovacao());
+        PrestadoraEntity prestadoraEntityAtualizada = atualizarStatus(prestadoraEntity);
+        return prestadoraResponseMapper.from(prestadoraEntityAtualizada);
+    }
+
+    private PrestadoraEntity atualizarStatus(PrestadoraEntity entity){
+        prestadoraRepository.updateStatusAprovacao(entity.getId(), entity.getStatusAprovacao());
+        PrestadoraEntity prestadoraSaved = getPrestadoraEntityById(entity.getId());
+        return prestadoraSaved;
     }
 }

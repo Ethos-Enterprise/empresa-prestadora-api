@@ -5,9 +5,11 @@ import com.ethos.empresaprestadoraapi.controller.response.PrestadoraResponse;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -34,5 +36,10 @@ public class PrestadoraController {
     @GetMapping(path = "/{id}")
     public PrestadoraResponse getEmpresaPrestadoraById(@PathVariable UUID id){
         return prestadoraService.getPrestadoraById(id);
+    }
+
+    @PutMapping(path = "/{id}")
+    public PrestadoraResponse putEmpresaPrestadoraStatus(@PathVariable UUID id, @RequestBody PrestadoraRequest prestadoraRequest){
+        return prestadoraService.putPrestadoraStatus(id, prestadoraRequest);
     }
 }
