@@ -2,6 +2,7 @@ package com.ethos.empresaprestadoraapi.controller;
 
 import com.ethos.empresaprestadoraapi.controller.request.PrestadoraRequest;
 import com.ethos.empresaprestadoraapi.controller.response.PrestadoraResponse;
+import com.ethos.empresaprestadoraapi.repository.entity.statusenum.StatusAprovacaoEnum;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import com.ethos.empresaprestadoraapi.service.PrestadoraService;
@@ -30,7 +32,10 @@ public class PrestadoraController {
     }
 
     @GetMapping
-    public List<PrestadoraResponse> getEmpresaPrestadora(){
+    public List<PrestadoraResponse> getEmpresaPrestadora(@RequestParam (value = "statusAprovacao", required = false) StatusAprovacaoEnum status){
+        if (status != null){
+            return prestadoraService.getPrestadoraByStatus(status);
+        }
         return prestadoraService.getAllPrestadoras();
     }
 

@@ -10,9 +10,12 @@ import com.ethos.empresaprestadoraapi.mapper.PrestadoraResponseMapper;
 import com.ethos.empresaprestadoraapi.model.Prestadora;
 import com.ethos.empresaprestadoraapi.repository.PrestadoraRepository;
 import com.ethos.empresaprestadoraapi.repository.entity.PrestadoraEntity;
+import com.ethos.empresaprestadoraapi.repository.entity.statusenum.StatusAprovacaoEnum;
+import jakarta.transaction.Status;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -50,6 +53,12 @@ public class PrestadoraService {
         return prestadoraRepository.findAll().stream().map(prestadoraResponseMapper::from).toList();
     }
 
+    public List<PrestadoraResponse> getPrestadoraByStatus(StatusAprovacaoEnum status){
+        String statusString = status.toString();
+        List<PrestadoraEntity> prestadoraEntityList = prestadoraRepository.findByStatusAprovacao(statusString);
+        return prestadoraEntityList.stream().map(prestadoraResponseMapper::from).collect(Collectors.toList());
+    }
+
     public PrestadoraResponse getPrestadoraById(UUID id){
         return prestadoraResponseMapper.from(getPrestadoraEntityById(id));
     }
@@ -64,13 +73,13 @@ public class PrestadoraService {
 
     public PrestadoraResponse putPrestadoraStatus(UUID id, PrestadoraRequest prestadoraRequest){
         PrestadoraEntity prestadoraEntity = getPrestadoraEntityById(id);
-        prestadoraEntity.setStatusAprovacao(prestadoraRequest.statusAprovacao());
+        prestadoraEntity.setStatusAprovacao(prestadoraRequest.statusAprovacao().toString());
         PrestadoraEntity prestadoraEntityAtualizada = atualizarStatus(prestadoraEntity);
         return prestadoraResponseMapper.from(prestadoraEntityAtualizada);
     }
 
     private PrestadoraEntity atualizarStatus(PrestadoraEntity entity){
-        prestadoraRepository.updateStatusAprovacao(entity.getId(), entity.getStatusAprovacao());
+        prestadoraRepository.updateStatusAprovacao(entity.getId(), StatusAprovacaoEnum.valueOf(entity.getStatusAprovacao()));
         return getPrestadoraEntityById(entity.getId());
     }
 

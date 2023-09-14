@@ -19,14 +19,14 @@ public class PrestadoraEntity {
     @Id
     UUID id;
 
-    StatusAprovacaoEnum statusAprovacao;
+    String statusAprovacao;
     UUID fkEmpresa;
 
     public PrestadoraEntity() {
     }
 
     @Builder(toBuilder = true)
-    public PrestadoraEntity(StatusAprovacaoEnum statusAprovacao, UUID fkEmpresa) {
+    public PrestadoraEntity(String statusAprovacao, UUID fkEmpresa) {
         this.id = UUID.randomUUID();
         this.statusAprovacao = statusAprovacao;
         this.fkEmpresa = fkEmpresa;
@@ -41,11 +41,11 @@ public class PrestadoraEntity {
         this.id = id;
     }
 
-    public StatusAprovacaoEnum getStatusAprovacao() {
+    public String getStatusAprovacao() {
         return statusAprovacao;
     }
 
-    public void setStatusAprovacao(StatusAprovacaoEnum statusAprovacao) {
+    public void setStatusAprovacao(String statusAprovacao) {
         this.statusAprovacao = statusAprovacao;
     }
 
