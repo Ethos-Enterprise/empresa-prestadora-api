@@ -11,6 +11,7 @@ import com.ethos.empresaprestadoraapi.model.Prestadora;
 import com.ethos.empresaprestadoraapi.repository.PrestadoraRepository;
 import com.ethos.empresaprestadoraapi.repository.entity.PrestadoraEntity;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -54,7 +55,11 @@ public class PrestadoraService {
     }
 
     private PrestadoraEntity getPrestadoraEntityById(UUID id){
-        return prestadoraRepository.findById(id).orElseThrow();
+        try {
+            return prestadoraRepository.findById(id).orElseThrow();
+        } catch (NoSuchElementException e) {
+            throw new EmpresaNaoEncontradaException(String.format("Empresa com id %s não encontrada", id.toString()));
+        }
     }
 
     public PrestadoraResponse putPrestadoraStatus(UUID id, PrestadoraRequest prestadoraRequest){
