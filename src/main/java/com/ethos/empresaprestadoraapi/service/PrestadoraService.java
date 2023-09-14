@@ -11,6 +11,7 @@ import com.ethos.empresaprestadoraapi.model.Prestadora;
 import com.ethos.empresaprestadoraapi.repository.PrestadoraRepository;
 import com.ethos.empresaprestadoraapi.repository.entity.PrestadoraEntity;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -46,5 +47,13 @@ public class PrestadoraService {
 
     public List<PrestadoraResponse> getAllPrestadoras(){
         return prestadoraRepository.findAll().stream().map(prestadoraResponseMapper::from).toList();
+    }
+
+    public PrestadoraResponse getPrestadoraById(java.util.UUID id){
+        return prestadoraResponseMapper.from(getPrestadoraEntityById(id));
+    }
+
+    private PrestadoraEntity getPrestadoraEntityById(UUID id){
+        return prestadoraRepository.findById(id).orElseThrow();
     }
 }
