@@ -1,5 +1,6 @@
 package com.ethos.empresaprestadoraapi.exceptionhandler;
 
+import com.ethos.empresaprestadoraapi.exception.EmpresaApiException;
 import com.ethos.empresaprestadoraapi.exception.EmpresaNaoEncontradaException;
 import com.ethos.empresaprestadoraapi.exception.PrestadoraJaCadastradaException;
 import java.net.URI;
@@ -29,6 +30,16 @@ public class PrestadoraExceptionHandler {
         problemDetail.setDetail(e.getMessage());
         problemDetail.setInstance(URI.create(instancia));
         problemDetail.setStatus(HttpStatus.NOT_FOUND);
+        return problemDetail;
+    }
+
+    @ExceptionHandler(EmpresaApiException.class)
+    public ProblemDetail handleEmpresaApiException(EmpresaApiException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        problemDetail.setTitle("Erro ao buscar empresa");
+        problemDetail.setDetail(e.getMessage());
+        problemDetail.setInstance(URI.create(instancia));
+        problemDetail.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         return problemDetail;
     }
 }

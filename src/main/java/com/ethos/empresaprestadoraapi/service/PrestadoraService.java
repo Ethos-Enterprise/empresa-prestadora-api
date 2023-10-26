@@ -1,7 +1,10 @@
 package com.ethos.empresaprestadoraapi.service;
 
+import com.ethos.empresaprestadoraapi.api.EmpresaApiClient;
+import com.ethos.empresaprestadoraapi.api.empresadto.Empresa;
 import com.ethos.empresaprestadoraapi.controller.request.PrestadoraRequest;
 import com.ethos.empresaprestadoraapi.controller.response.PrestadoraResponse;
+import com.ethos.empresaprestadoraapi.exception.EmpresaApiException;
 import com.ethos.empresaprestadoraapi.exception.EmpresaNaoEncontradaException;
 import com.ethos.empresaprestadoraapi.exception.PrestadoraJaCadastradaException;
 import com.ethos.empresaprestadoraapi.mapper.PrestadoraEntityMapper;
@@ -11,7 +14,7 @@ import com.ethos.empresaprestadoraapi.model.Prestadora;
 import com.ethos.empresaprestadoraapi.repository.PrestadoraRepository;
 import com.ethos.empresaprestadoraapi.repository.entity.PrestadoraEntity;
 import com.ethos.empresaprestadoraapi.repository.entity.statusenum.StatusAprovacaoEnum;
-import jakarta.transaction.Status;
+import feign.FeignException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -27,9 +30,11 @@ public class PrestadoraService {
     private final PrestadoraMapper prestadoraMapper;
     private final PrestadoraResponseMapper prestadoraResponseMapper;
     private final PrestadoraEntityMapper prestadoraEntityMapper;
+    private final EmpresaApiClient empresaApiClient;
 
     public PrestadoraResponse postEmpresaPrestadora(PrestadoraRequest prestadoraRequest) {
         Prestadora prestadoraModel = prestadoraMapper.from(prestadoraRequest);
+        validarEmpresa(prestadoraModel.fkEmpresa());
         PrestadoraEntity prestadoraEntity = prestadoraEntityMapper.from(prestadoraModel);
         PrestadoraEntity prestadoraEntitySalva = salvar(prestadoraEntity);
         return prestadoraResponseMapper.from(prestadoraEntitySalva);
@@ -45,25 +50,26 @@ public class PrestadoraService {
             } else if (e.getMessage().contains("fk_empresa_id")) {
                 throw new EmpresaNaoEncontradaException(String.format("Empresa com id %s não encontrada", entity.getFkEmpresa().toString()));
 
-            } throw new RuntimeException(e.getMessage());
+            }
+            throw new RuntimeException(e.getMessage());
         }
     }
 
-    public List<PrestadoraResponse> getAllPrestadoras(){
+    public List<PrestadoraResponse> getAllPrestadoras() {
         return prestadoraRepository.findAll().stream().map(prestadoraResponseMapper::from).toList();
     }
 
-    public List<PrestadoraResponse> getPrestadoraByStatus(StatusAprovacaoEnum status){
+    public List<PrestadoraResponse> getPrestadoraByStatus(StatusAprovacaoEnum status) {
         String statusString = status.toString();
         List<PrestadoraEntity> prestadoraEntityList = prestadoraRepository.findByStatusAprovacao(statusString);
         return prestadoraEntityList.stream().map(prestadoraResponseMapper::from).collect(Collectors.toList());
     }
 
-    public PrestadoraResponse getPrestadoraById(UUID id){
+    public PrestadoraResponse getPrestadoraById(UUID id) {
         return prestadoraResponseMapper.from(getPrestadoraEntityById(id));
     }
 
-    private PrestadoraEntity getPrestadoraEntityById(UUID id){
+    private PrestadoraEntity getPrestadoraEntityById(UUID id) {
         try {
             return prestadoraRepository.findById(id).orElseThrow();
         } catch (NoSuchElementException e) {
@@ -71,25 +77,37 @@ public class PrestadoraService {
         }
     }
 
-    public PrestadoraResponse putPrestadoraStatus(UUID id, PrestadoraRequest prestadoraRequest){
+    public PrestadoraResponse putPrestadoraStatus(UUID id, PrestadoraRequest prestadoraRequest) {
         PrestadoraEntity prestadoraEntity = getPrestadoraEntityById(id);
         prestadoraEntity.setStatusAprovacao(prestadoraRequest.statusAprovacao().toString());
         PrestadoraEntity prestadoraEntityAtualizada = atualizarStatus(prestadoraEntity);
         return prestadoraResponseMapper.from(prestadoraEntityAtualizada);
     }
 
-    private PrestadoraEntity atualizarStatus(PrestadoraEntity entity){
-        prestadoraRepository.updateStatusAprovacao(entity.getId(), StatusAprovacaoEnum.valueOf(entity.getStatusAprovacao()));
+    private PrestadoraEntity atualizarStatus(PrestadoraEntity entity) {
+        prestadoraRepository.updateStatusAprovacao(entity.getId(), entity.getStatusAprovacao());
         return getPrestadoraEntityById(entity.getId());
     }
 
-    public void deletePrestadora(UUID id){
+    public void deletePrestadora(UUID id) {
         PrestadoraEntity prestadoraEntity = getPrestadoraEntityById(id);
         deletar(prestadoraEntity);
         prestadoraResponseMapper.from(prestadoraEntity);
     }
 
-    private void deletar(PrestadoraEntity entity){
+    private void deletar(PrestadoraEntity entity) {
         prestadoraRepository.delete(entity);
+    }
+
+    private void validarEmpresa(UUID id) {
+        try {
+            Empresa empresa = empresaApiClient.getEmpresaById(id);
+        } catch (FeignException e) {
+            e.printStackTrace();
+            if (e.status() == 404) {
+                throw new EmpresaNaoEncontradaException(String.format("Empresa com id %s não encontrada", id.toString()));
+            }
+            throw new EmpresaApiException(e.getMessage());
+        }
     }
 }

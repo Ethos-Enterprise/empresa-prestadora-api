@@ -13,7 +13,6 @@ import lombok.Builder;
 import org.hibernate.annotations.Immutable;
 
 @Entity
-@Immutable
 @Table(name = "prestadora_servico")
 public class PrestadoraEntity {
     @Id

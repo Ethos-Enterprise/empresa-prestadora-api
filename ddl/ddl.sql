@@ -1,35 +1,7 @@
-create TABLE IF NOT EXISTS EMPRESA  (
-  id uuid PRIMARY KEY,
-  razao_social varchar(300) NOT NULL UNIQUE,
-  cnpj varchar(14) NOT NULL UNIQUE,
-  telefone varchar(14) UNIQUE,
-  email varchar(300) NOT NULL UNIQUE,
-  senha varchar(300) NOT NULL,
-  setor varchar(300),
-  qtd_funcionarios int,
-  endereco_id UUID
- );
-
-create TABLE IF NOT EXISTS ENDERECO  (
-  id UUID PRIMARY KEY,
-  numero varchar(5),
-  cep varchar(10),
-  logradouro varchar(200),
-  complemento varchar(300),
-  bairro varchar(300),
-  uf char(2)
-);
-
-alter table empresa
-add constraint fk_endereco_id
-foreign key(endereco_id) references endereco(id);
-
-
 create TABLE IF NOT EXISTS PRESTADORA_SERVICO (
   id uuid PRIMARY KEY,
   status_aprovacao varchar(30),
-  fk_empresa UUID unique,
-  foreign key(fk_empresa) references empresa(id)
+  fk_empresa UUID unique
 );
 
 

@@ -16,5 +16,5 @@ public interface PrestadoraRepository extends JpaRepository<PrestadoraEntity, UU
     @Transactional
     @Modifying
     @Query("UPDATE PrestadoraEntity p SET p.statusAprovacao = ?2 WHERE p.id = ?1")
-    void updateStatusAprovacao(UUID id, StatusAprovacaoEnum statusAprovacao);
+    void updateStatusAprovacao(UUID id, String statusAprovacao);
 }
