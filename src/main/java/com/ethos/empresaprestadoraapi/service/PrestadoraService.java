@@ -17,9 +17,11 @@ import com.ethos.empresaprestadoraapi.repository.entity.statusenum.StatusAprovac
 import feign.FeignException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.HttpStatus;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -82,6 +84,29 @@ public class PrestadoraService {
         prestadoraEntity.setStatusAprovacao(prestadoraRequest.statusAprovacao().toString());
         PrestadoraEntity prestadoraEntityAtualizada = atualizarStatus(prestadoraEntity);
         return prestadoraResponseMapper.from(prestadoraEntityAtualizada);
+    }
+
+    public PrestadoraResponse getPrestadoraByFkEmpresa(UUID fkEmpresa){
+        try{
+            Empresa empresa = empresaApiClient.getEmpresaById(fkEmpresa);
+            if(empresa == null){
+                throw new EmpresaNaoEncontradaException(String.format("Empresa com id %s não existe", fkEmpresa.toString()));
+            }
+            Optional<PrestadoraEntity> prestadoraEntity = prestadoraRepository.findPrestadoraEntityByfkEmpresa(fkEmpresa);
+
+            if(prestadoraEntity.isEmpty()){
+                throw new EmpresaNaoEncontradaException(String.format("A empresa com id %s não é uma empresa prestadora de serviços", fkEmpresa.toString()));
+            }
+
+            return prestadoraResponseMapper.from(prestadoraEntity.get());
+        }catch (FeignException e){
+            if(e.status() == HttpStatus.SC_NOT_FOUND){
+                throw new EmpresaNaoEncontradaException(String.format("Empresa com id %s não existe", fkEmpresa.toString()));
+            }
+            else {
+                throw new EmpresaApiException(e.getMessage());
+            }
+        }
     }
 
     private PrestadoraEntity atualizarStatus(PrestadoraEntity entity) {

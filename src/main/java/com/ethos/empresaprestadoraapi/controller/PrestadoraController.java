@@ -54,4 +54,9 @@ public class PrestadoraController {
     public void deleteEmpresaPrestadora(@PathVariable UUID id){
         prestadoraService.deletePrestadora(id);
     }
+
+    @GetMapping(path = "/empresa/{fkEmpresa}")
+    public PrestadoraResponse getPrestadoraByFkEmpresa(@PathVariable UUID fkEmpresa){
+        return prestadoraService.getPrestadoraByFkEmpresa(fkEmpresa);
+    }
 }
