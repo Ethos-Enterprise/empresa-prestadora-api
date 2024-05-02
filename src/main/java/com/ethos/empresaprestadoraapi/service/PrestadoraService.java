@@ -36,7 +36,7 @@ public class PrestadoraService {
 
     public PrestadoraResponse postEmpresaPrestadora(PrestadoraRequest prestadoraRequest) {
         Prestadora prestadoraModel = prestadoraMapper.from(prestadoraRequest);
-//        validarEmpresa(prestadoraModel.fkEmpresa());
+        validarEmpresa(prestadoraModel.fkEmpresa());
         PrestadoraEntity prestadoraEntity = prestadoraEntityMapper.from(prestadoraModel);
         PrestadoraEntity prestadoraEntitySalva = salvar(prestadoraEntity);
         return prestadoraResponseMapper.from(prestadoraEntitySalva);
